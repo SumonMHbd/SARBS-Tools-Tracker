@@ -865,8 +865,8 @@ const App: React.FC = () => {
                 <tr><th className="px-10 py-6">Official Name</th><th className="px-10 py-6">Brand / Model</th><th className="px-10 py-6">Unit Permissions</th><th className="px-10 py-6 text-right">Update</th></tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {(isSuperAdmin ? toolCatalog : toolCatalog.filter(t => t.department === user?.department || t.department === 'All')).map(t => (
-                  <tr key={t.name} className="hover:bg-slate-50">
+                {(isSuperAdmin ? toolCatalog : toolCatalog.filter(t => t && (t.department === user?.department || t.department === 'All'))).map((t, idx) => (
+                  <tr key={`${t.name}-${t.department || 'All'}-${idx}`} className="hover:bg-slate-50">
                     <td className="px-10 py-5 font-black text-slate-900 text-sm">{t.name}</td>
                     <td className="px-10 py-5 font-bold text-slate-400 italic text-xs">{t.brand}</td>
                     <td className="px-10 py-5"><span className="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-xl text-[9px] font-black uppercase border border-blue-100">{t.department}</span></td>
@@ -921,25 +921,36 @@ const App: React.FC = () => {
         isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} 
         onSave={async (trx, details) => { 
           setIsSyncing(true); 
-          for(const t of trx) { 
-            const isStockIn = t.entryType === 'Stock IN';
-            // If it's a Stock IN, we use the logged-in admin's info instead of an employee
-            const contextUser = isStockIn ? user : details;
-            
-            const payload = { 
-              ...t, 
-              employeeId: isStockIn ? user?.id : t.employeeId,
-              department: isSuperAdmin ? (contextUser?.department || user?.department) : user?.department 
-            };
-            await saveTransactionToSheet(payload, contextUser); 
+          try {
+            let allOk = true;
+            for(const t of trx) { 
+              const isStockIn = t.entryType === 'Stock IN';
+              const contextUser = isStockIn ? user : details;
+              
+              const payload = { 
+                ...t, 
+                employeeId: isStockIn ? user?.id : t.employeeId,
+                department: isSuperAdmin ? (contextUser?.department || user?.department) : user?.department 
+              };
+              const ok = await saveTransactionToSheet(payload, contextUser); 
+              if (!ok) allOk = false;
+            }
+            if (allOk) {
+              showToast("Transaction Saved.");
+            } else {
+              showToast("Some entries failed to sync.", "error");
+            }
+            await loadData(true);
+          } finally {
+            setIsSyncing(false);
+            setIsModalOpen(false);
           }
-          await loadData(true); setIsModalOpen(false); 
         }} 
         employees={visibleEmployees} availableTools={filteredToolsForEntry} 
       />
       <EmployeeModal isOpen={isEmployeeModalOpen} onClose={() => setIsEmployeeModalOpen(false)} onSave={handleSaveEmployee} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} userDepartment={user?.department || ''} allDepartments={departments} initialData={editingEmployee} />
-      <AdminModal isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} onSave={async (data) => { setIsSyncing(true); await saveAdminToSheet(data); await loadData(true); setIsAdminModalOpen(false); }} initialData={editingAdmin} departments={departments} />
-      <ToolCatalogModal isOpen={isCatalogModalOpen} onClose={() => setIsCatalogModalOpen(false)} onSave={async (data) => { setIsSyncing(true); data.oldName ? await updateToolInCatalog(data as any) : await saveToolToCatalog(data); await loadData(true); setIsCatalogModalOpen(false); }} departments={departments} isSyncing={isSyncing} initialData={editingTool} />
+      <AdminModal isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} onSave={async (data) => { setIsSyncing(true); const ok = await saveAdminToSheet(data); if (ok) { showToast("Access Updated."); await loadData(true); setIsAdminModalOpen(false); } else { showToast("Failed to save admin.", "error"); setIsSyncing(false); } }} initialData={editingAdmin} departments={departments} />
+      <ToolCatalogModal isOpen={isCatalogModalOpen} onClose={() => setIsCatalogModalOpen(false)} onSave={async (data) => { setIsSyncing(true); const ok = data.oldName ? await updateToolInCatalog(data as any) : await saveToolToCatalog(data); if (ok) { showToast(data.oldName ? "Catalog Updated." : "Tool Registered."); await loadData(true); setIsCatalogModalOpen(false); } else { showToast("Failed to save tool.", "error"); setIsSyncing(false); } }} departments={departments} isSyncing={isSyncing} initialData={editingTool} />
       
       {isAdmin && <AIChat inventory={stockSummaryData} />}
 

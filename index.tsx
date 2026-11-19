@@ -12,6 +12,7 @@ if (typeof window !== 'undefined') {
     return true;
   };
   window.addEventListener('error', (event) => {
+    if (event.target && event.target !== window) return;
     event.preventDefault();
     event.stopPropagation();
     if (event.stopImmediatePropagation) event.stopImmediatePropagation();

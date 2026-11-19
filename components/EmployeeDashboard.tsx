@@ -44,8 +44,8 @@ const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({ user, transaction
   }, [user, transactions]);
 
   const recentHistory = useMemo(() => {
-    return transactions
-      .filter(t => t.employeeId === user.id)
+    return (transactions || [])
+      .filter(t => t && user && t.employeeId === user.id)
       .reverse()
       .slice(0, 10);
   }, [user, transactions]);
@@ -227,6 +227,12 @@ const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({ user, transaction
                           <label className="block text-[10px] font-black text-slate-400 uppercase mb-2">New Security Password</label>
                           <input type="text" required minLength={4} className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-black text-sm transition-all shadow-inner focus:border-blue-500" placeholder="MIN 4 CHARACTERS" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                        </div>
+                       {errorMsg && (
+                         <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-700 flex items-center gap-2">
+                           <AlertCircle className="w-4 h-4 shrink-0" />
+                           <span>{errorMsg}</span>
+                         </div>
+                       )}
                        <button type="submit" disabled={isSubmitting || !newPassword} className="w-full py-4 bg-slate-900 hover:bg-black disabled:bg-slate-300 text-white font-black rounded-2xl text-xs uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 transition-all active:scale-95">
                           {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                           {isSubmitting ? 'TRANSMITTING...' : 'COMMIT REQUEST'}

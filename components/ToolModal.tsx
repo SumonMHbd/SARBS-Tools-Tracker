@@ -63,7 +63,7 @@ const ToolModal: React.FC<ToolModalProps> = ({
       setDate(initialTransaction.date);
       setEntryType(initialTransaction.entryType);
       setEmployeeId(initialTransaction.employeeId || '');
-      const emp = employees.find(e => e.id === initialTransaction.employeeId);
+      const emp = (employees || []).find(e => e && e.id === initialTransaction.employeeId);
       setEmployeeSearchQuery(emp ? `${emp.id} - ${emp.name}` : initialTransaction.employeeId || '');
       setGlobalRemarks(initialTransaction.remarks || '');
       setToolItems([{
@@ -102,9 +102,11 @@ const ToolModal: React.FC<ToolModalProps> = ({
   const filteredEmployees = useMemo(() => {
     if (!employeeSearchQuery.trim()) return [];
     const q = employeeSearchQuery.toLowerCase().trim();
-    return employees.filter(emp => 
-      String(emp.id).toLowerCase().includes(q) || 
-      String(emp.name).toLowerCase().includes(q)
+    return (employees || []).filter(emp => 
+      emp && (
+        String(emp.id || '').toLowerCase().includes(q) || 
+        String(emp.name || '').toLowerCase().includes(q)
+      )
     ).slice(0, 5);
   }, [employeeSearchQuery, employees]);
 
