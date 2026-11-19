@@ -1,0 +1,32 @@
+{
+  "name": "SARBS Tools Tracker",
+  "short_name": "SARBS Tools",
+  "description": "Official Inventory Management for SARBS Communications Ltd.",
+  "id": "sarbs-tools-pwa-v17",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://images.weserv.nl/?url=https%3A%2F%2Fi.ibb.co.com%2Fj94hMrsy%2FSARBS-Icon.png&w=20&h=20&fit=contain&bg=ffffff&pad=50",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.weserv.nl/?url=https%3A%2F%2Fi.ibb.co.com%2Fj94hMrsy%2FSARBS-Icon.png&w=92&h=92&fit=contain&bg=ffffff&pad=50",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.weserv.nl/?url=https%3A%2F%2Fi.ibb.co.com%2Fj94hMrsy%2FSARBS-Icon.png&w=412&h=412&fit=contain&bg=ffffff&pad=50",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "SARBS Tools Tracker",
+  "description": "A modern inventory management system for SARBS Communications Ltd., featuring real-time tool tracking, status monitoring, and department-based asset reconciliation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

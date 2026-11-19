@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+body { 
+  font-family: 'Inter', sans-serif; 
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+  background-color: #f8fafc;
+}
+
+.safe-top { padding-top: env(safe-area-inset-top); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+button:active { transform: scale(0.96); transition: transform 0.1s; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
